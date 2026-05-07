@@ -1,0 +1,14 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>My CVs - OneTwoHire</title>
+<style>body{font-family:Arial,sans-serif;background:#f6fafb;margin:0;color:#0f172a}header{padding:22px 32px;background:white;border-bottom:1px solid #e2e8f0;display:flex;justify-content:space-between;align-items:center}main{padding:28px 32px}.card{background:#fff;border:1px solid #dbe7ea;border-radius:18px;padding:18px;margin:14px 0;box-shadow:0 10px 30px rgba(15,23,42,.06)}button{border:0;border-radius:12px;padding:10px 14px;font-weight:700;background:#26797b;color:#fff;cursor:pointer;margin-right:8px}.secondary{background:#eaf3f4;color:#0f172a}small{color:#64748b}</style>
+</head><body><header><h2>OneTwoHire — My CVs</h2><button onclick="location.href='index.html'" class="secondary">Back</button></header><main><div id="list"></div></main>
+<script>
+function userKey(){return String(localStorage.getItem('currentUser')||localStorage.getItem('registeredEmail')||'guest').trim().toLowerCase()}
+function keys(){return ['userCVs_'+userKey(),'oneTwoHireMyCvs']}
+function esc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
+function getList(){let out=[]; keys().forEach(k=>{try{let a=JSON.parse(localStorage.getItem(k)||'[]'); if(Array.isArray(a)) out=out.concat(a)}catch(e){}}); const seen=new Set(); return out.filter(x=>{const id=x.id||JSON.stringify(x); if(seen.has(id)) return false; seen.add(id); return true;});}
+function load(){const list=getList(); const root=document.getElementById('list'); if(!list.length){root.innerHTML='<p>No saved CVs yet.</p>';return;} root.innerHTML=list.map((cv,i)=>`<div class="card"><h3>${esc(cv.fullName||cv.title||cv.name||'Saved CV')}</h3><small>Saved: ${cv.updatedAt?new Date(cv.updatedAt).toLocaleString():(cv.savedAt?new Date(cv.savedAt).toLocaleString():'')}</small><p>${esc(cv.targetJobTitle||cv.jobTitle||'')}</p><button onclick="openCv(${i})">Open</button><button class="secondary" onclick="delCv(${i})">Delete</button></div>`).join('')}
+function openCv(i){const list=getList(); const cv=list[i]; localStorage.setItem('activeCVEditId',cv.id||''); localStorage.setItem('othLoadedCvData',JSON.stringify(cv)); location.href='index.html?mode=original'}
+function delCv(i){const list=getList(); const cv=list[i]; keys().forEach(k=>{try{let a=JSON.parse(localStorage.getItem(k)||'[]'); a=a.filter(x=>(x.id||JSON.stringify(x))!==(cv.id||JSON.stringify(cv))); localStorage.setItem(k,JSON.stringify(a));}catch(e){}}); load()}
+load();
+</script></body></html>

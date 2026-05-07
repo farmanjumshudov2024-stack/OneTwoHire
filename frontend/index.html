@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OneTwoHire — AI CV & Job Match</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- html2pdf for PDF generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <link rel="stylesheet" href="styles.css">
+
+
+<style id="mycvs-real-menu-css">
+#user-dropdown-content #menu-cvs{display:flex;align-items:center;gap:10px;}
+.oth-cv-tools{display:none!important;}
+</style>
+</head>
+<body>
+    
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="logo">
+            <i class="fa-solid fa-earth-americas"></i> OneTwoHire<span>.</span>
+        </div>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="index.html?mode=original">CV Generator</a>
+            <a href="index.html?mode=basic" id="basic-pack-link">Freemium Pack</a>
+        </div>
+        <div class="nav-actions">
+            <button id="reset-btn" class="btn btn-outline btn-sm" style="display: none;"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</button>
+            <button id="pro-unlock-btn" class="pro-badge border-none cursor-pointer">
+                <i class="fa-solid fa-crown"></i> <span>Premium $5.99/mo</span>
+            </button>
+            <div class="dropdown" id="user-menu-dropdown" style="display: none; position: relative; margin-left: 10px;">
+                <button id="user-menu-btn" class="btn btn-icon" style="background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--text-color);">
+                    <i class="fa-solid fa-ellipsis-vertical"></i>
+                </button>
+                <div class="dropdown-content" id="user-dropdown-content">
+                    <a href="#" id="menu-profile"><i class="fa-regular fa-user"></i> Profile</a>
+                    <a href="my-cvs.html" id="menu-cvs"><i class="fa-regular fa-file-lines"></i> My CVs</a>
+                    <a href="#" id="menu-settings"><i class="fa-solid fa-gear"></i> Settings</a>
+                    <hr>
+                    <a href="#" id="menu-logout" style="color: #ef4444;"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Public Home Page -->
+    <main id="home-view" class="view active">
+        <section class="home-hero">
+            <div class="home-hero-content">
+                <span class="home-eyebrow"><i class="fa-solid fa-wand-magic-sparkles"></i> AI CV Builder, Job Seeker & Job Match</span>
+                <h1>Build a professional CV for any country in minutes.</h1>
+                <p>Choose a pack, sign in, select your target country, then pick the best template for that market.</p>
+                <div class="home-actions">
+                    <button class="btn btn-primary btn-lg home-pack-btn" data-pack="original">Start CV Generator</button>
+                    <button class="btn btn-outline btn-lg home-pack-btn" data-pack="basic">Start Freemium Free</button>
+                </div>
+            </div>
+            <div class="home-hero-card"><div class="mini-cv-card"><div class="mini-cv-header"></div><div class="mini-cv-lines"><span></span><span></span><span></span><span></span></div><div class="mini-cv-grid"><i></i><i></i><i></i><i></i></div></div></div>
+        </section>
+        <section class="pack-section">
+            <div class="pack-header"><h2>Choose your pack</h2><p>After choosing a pack, users register or log in, then continue to country and template selection.</p></div>
+            <div class="pack-grid">
+                <article class="pack-card featured"><div class="pack-icon"><i class="fa-solid fa-crown"></i></div><h3>Premium Pack</h3><p><strong>$5.99 / month</strong> — professional country-based templates, Job Seeker matching and AI assistant.</p><ul><li>Professional premium templates</li><li>AI assistant for CV improvement</li><li>Job Seeker: local job suggestions by country</li></ul><button class="btn btn-primary btn-block home-pack-btn" data-pack="original">Start Premium $5.99/mo</button></article>
+                <article class="pack-card"><div class="pack-icon"><i class="fa-solid fa-file-lines"></i></div><h3>Freemium Pack</h3><p><strong>Free</strong> — simple CV creation with basic templates for quick applications.</p><ul><li>Basic templates</li><li>Fast editing</li><li>PDF download</li></ul><button class="btn btn-outline btn-block home-pack-btn" data-pack="basic">Start Free</button></article>
+            </div>
+        </section>
+    </main>
+
+    <!-- Auth Main View -->
+
+    <main id="auth-view" class="view">
+        <div class="auth-container">
+            <!-- Login Card -->
+            <div class="auth-card" id="login-card">
+                <!-- Header with Logo -->
+                <div class="auth-header">
+                    <div class="auth-logo">
+                        <i class="fa-solid fa-file-lines"></i>
+                    </div>
+                    <h1>OneTwoHire</h1>
+                    <p class="auth-subtitle">Create professional resumes in minutes</p>
+                </div>
+
+                <!-- Error Messages -->
+                <div id="auth-error" class="auth-message auth-error" style="display: none;"></div>
+                <div id="auth-success" class="auth-message auth-success" style="display: none;"></div>
+
+                <!-- Login Form -->
+                <form id="login-form" class="auth-form">
+                    <div class="input-group">
+                        <label for="login-email">Email Address</label>
+                        <input 
+                            type="email" 
+                            id="login-email" 
+                            class="form-input" 
+                            placeholder="name@example.com"
+                            autocomplete="username"
+                            required
+                        >
+                        <span class="input-error" id="login-email-error"></span>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="login-password">Password</label>
+                        <div class="password-wrapper">
+                            <input 
+                                type="password" 
+                                id="login-password" 
+                                class="form-input" 
+                                placeholder="Enter your password"
+                                autocomplete="current-password"
+                                required
+                            >
+                            <button 
+                                type="button" 
+                                class="password-toggle" 
+                                id="login-password-toggle"
+                                title="Show/Hide Password"
+                            >
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
+                        <span class="input-error" id="login-password-error"></span>
+                    </div>
+
+                    <div class="checkbox-group">
+                        <input 
+                            type="checkbox" 
+                            id="remember-me"
+                            name="remember-me"
+                            checked
+                        >
+                        <label for="remember-me">Remember me for 30 days</label>
+                    </div>
+
+                    <button 
+                        type="submit" 
+                        id="login-btn" 
+                        class="btn btn-primary btn-block auth-submit"
+                    >
+                        <span class="btn-text">Sign In</span>
+                        <span class="btn-loader" style="display: none;">
+                            <i class="fa-solid fa-spinner fa-spin"></i>
+                        </span>
+                    </button>
+                </form>
+
+                <!-- Register Button -->
+                <div class="auth-footer">
+                    <p>Don't have an account? 
+                        <button type="button" class="link-button" id="go-to-register">Register here</button>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Register Card -->
+            <div class="auth-card" id="register-card" style="display: none;">
+                <!-- Register Header -->
+                <div class="auth-header">
+                    <div class="auth-logo">
+                        <i class="fa-solid fa-file-lines"></i>
+                    </div>
+                    <h1>Join OneTwoHire</h1>
+                    <p class="auth-subtitle">Start building amazing CVs</p>
+                </div>
+
+                <!-- Register Form -->
+                <form id="register-form" class="auth-form">
+                    <div class="input-group">
+                        <label for="reg-name">Full Name</label>
+                        <input 
+                            type="text" 
+                            id="reg-name" 
+                            class="form-input" 
+                            placeholder="Jane Doe"
+                            required
+                        >
+                        <span class="input-error" id="reg-name-error"></span>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="reg-email">Email Address</label>
+                        <input 
+                            type="email" 
+                            id="reg-email" 
+                            class="form-input" 
+                            placeholder="jane@example.com"
+                            autocomplete="email"
+                            required
+                        >
+                        <span class="input-error" id="reg-email-error"></span>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="reg-password">Password</label>
+                        <div class="password-wrapper">
+                            <input 
+                                type="password" 
+                                id="reg-password" 
+                                class="form-input" 
+                                placeholder="At least 6 characters"
+                                required
+                            >
+                            <button 
+                                type="button" 
+                                class="password-toggle" 
+                                id="reg-password-toggle"
+                                title="Show/Hide Password"
+                            >
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                        </div>
+                        <span class="input-error" id="reg-password-error"></span>
+                        <span class="input-hint">At least 6 characters</span>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="input-group">
+                            <label for="reg-age">Age <span style="color:#64748b; font-weight:400;">(optional)</span></label>
+                            <input 
+                                type="number" 
+                                id="reg-age" 
+                                class="form-input" 
+                                placeholder="25"
+                                min="16"
+                                max="120"
+                                >
+                            <span class="input-error" id="reg-age-error"></span>
+                        </div>
+                        <div class="input-group">
+                            <label for="reg-gender">Gender <span style="color:#64748b; font-weight:400;">(optional)</span></label>
+                            <select id="reg-gender" class="form-input form-select">
+                                <option value="" disabled selected>Select</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </select>
+                            <span class="input-error" id="reg-gender-error"></span>
+                        </div>
+                    </div>
+
+                    <button 
+                        type="submit" 
+                        id="register-btn" 
+                        class="btn btn-primary btn-block auth-submit"
+                    >
+                        <span class="btn-text">Create Account</span>
+                        <span class="btn-loader" style="display: none;">
+                            <i class="fa-solid fa-spinner fa-spin"></i>
+                        </span>
+                    </button>
+                </form>
+
+                <!-- Back Button -->
+                <div class="auth-footer">
+                    <button type="button" class="btn btn-secondary btn-block" id="back-to-login" style="margin-top: 1rem;">
+                        <i class="fa-solid fa-arrow-left"></i> Back to Login
+                    </button>
+                </div>
+            </div>
+
+            <!-- Side Panel (Optional) -->
+            <div class="auth-panel">
+                <div class="auth-panel-content">
+                    <h2>Professional CVs, Made Easy</h2>
+                    <p>Create beautiful, ATS-friendly resumes that get you noticed by recruiters.</p>
+                    <ul class="auth-features">
+                        <li><i class="fa-solid fa-check"></i> 50+ professional templates</li>
+                        <li><i class="fa-solid fa-check"></i> AI-powered suggestions</li>
+                        <li><i class="fa-solid fa-check"></i> One-click PDF export</li>
+                        <li><i class="fa-solid fa-check"></i> ATS-optimized formatting</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Main App Content -->
+    <div id="main-app" style="display: none; height: 100%; width: 100%; flex: 1; flex-direction: column; overflow: hidden;">
+
+    <!-- Country Selection View -->
+    <main id="country-view" class="view">
+        <div class="onboard-card country-card">
+            <h2>Target Country</h2>
+            <p>We'll adapt your CV formal requirements (Photos, Privacy rules) to strictly match standard HR practices in your selected country.</p>
+            
+            <div class="input-group text-left mt-3 mb-4">
+                <label for="country-select">Select Your Country</label>
+                <select id="country-select" class="form-select">
+                    <option value="" disabled selected>Choose your country...</option>
+                    <option value="azerbaijan">Azerbaijan</option>
+                    <option value="germany">Germany</option>
+                    <option value="usa">United States</option>
+                    <option value="uk">United Kingdom</option>
+                    <option value="canada">Canada</option>
+                    <option value="singapore">Singapore</option>
+                    <option value="france">France</option>
+                    <option value="china">China</option>
+                    <option value="spain">Spain</option>
+                </select>
+                <div id="country-helper-text" class="text-muted mt-2" style="font-size:0.9rem; min-height: 20px;"></div>
+            </div>
+            <div class="form-nav text-center" style="background: transparent; border: none; padding:0;">
+                <button id="back-to-signin-btn" class="btn btn-secondary mt-3"><i class="fa-solid fa-arrow-left"></i> Back</button>
+                <button id="country-submit-btn" class="btn btn-primary mt-3">Continue to Pack <i class="fa-solid fa-arrow-right"></i></button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Template Selection Library View (50 variations) -->
+    <main id="library-view" class="view">
+        <div class="library-container">
+            <div class="library-header text-center">
+                <h2>Template Library</h2>
+                <p class="text-muted">Discover 50 visually distinct variations perfectly combined with your country's formal requirements.</p>
+                <p id="library-region-badge" class="badge mt-2" style="display:inline-block;"></p>
+            </div>
+
+            <!-- Filters -->
+            <div class="filter-tabs">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="minimal">Minimal</button>
+                <button class="filter-btn" data-filter="modern">Modern</button>
+                <button class="filter-btn" data-filter="creative">Creative</button>
+                <button class="filter-btn" data-filter="corporate">Corporate</button>
+                <button class="filter-btn" data-filter="compact">Compact</button>
+            </div>
+
+            <!-- Cards injected via JS -->
+            <div class="template-grid" id="template-grid"></div>
+            
+            <div class="text-center mt-4">
+                <button id="back-to-country-btn" class="btn btn-outline"><i class="fa-solid fa-arrow-left"></i> Change Region</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Editor View (Geographic Adapting Form) -->
+    <main id="editor-view" class="view">
+        <div class="editor-layout">
+            
+            <!-- Left Side: Wizard Form -->
+            <section class="form-section">
+                <!-- Validation/Back Header -->
+                <div style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+                    <button type="button" id="editor-back-btn" class="btn btn-outline btn-sm"><i class="fa-solid fa-arrow-left"></i> Back to Country Select</button>
+                    <div></div>
+                </div>
+                <!-- Loading Spinner for CV parsing -->
+                <div id="cv-loading-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); z-index: 1000; flex-direction: column; align-items: center; justify-content: center;">
+                    <div class="spinner" style="width: 50px; height: 50px; border: 5px solid #f3f3f3; border-top: 5px solid var(--cv-primary, #3b82f6); border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                    <p style="margin-top: 15px; font-weight: 600;">Analyzing your CV...</p>
+                </div>
+                <!-- Progress Bar -->
+                <div class="progress-container">
+                    <div class="progress-steps">
+                        <div class="progress-line"></div>
+                        <div class="progress-line-fill" id="progress-fill"></div>
+                        <div class="progress-step active" data-step="1">1<div class="step-label" data-i18n="stepPersonal">Personal</div></div>
+                        <div class="progress-step" data-step="2">2<div class="step-label" data-i18n="stepExperience">Experience</div></div>
+                        <div class="progress-step" data-step="3">3<div class="step-label" data-i18n="stepEducation">Education</div></div>
+                        <div class="progress-step" data-step="4">4<div class="step-label" data-i18n="stepSkills">Skills</div></div>
+                        <div class="progress-step" data-step="5">5<div class="step-label" data-i18n="stepDownload">Download</div></div>
+                    </div>
+                </div>
+                
+                <form id="cv-form">
+                    
+                    <!-- Step 1: Personal Details -->
+                    <div class="wizard-step active" data-step="1">
+                        <h2 data-i18n="h2Personal">Personal details</h2>
+                        <p data-i18n="pPersonal">Fill out the fields required by your selected country standard.</p>
+                        <div class="grid-2">
+                            <div class="input-group">
+                                <label for="fullName" data-i18n="lblFullName">Full Name</label>
+                                <input type="text" id="fullName" class="live-input">
+                            </div>
+                            <div class="input-group">
+                                <label for="targetJobTitle" data-i18n="lblJobTitle">Target Job Title</label>
+                                <input type="text" id="targetJobTitle" class="live-input" placeholder="e.g. Architect">
+                            </div>
+                            <div class="input-group">
+                                <label for="email" data-i18n="lblEmail">Email</label>
+                                <input type="email" id="email" class="live-input">
+                            </div>
+                            <div class="input-group">
+                                <label for="phone" data-i18n="lblPhone">Phone</label>
+                                <input type="text" id="phone" class="live-input" placeholder="+1 234 567 890">
+                            </div>
+
+                            <!-- Conditional Dynamic Inputs based on country mapping -->
+                            <div class="input-group span-2 conditional-group" id="group-address">
+                                <label for="address" data-i18n="lblAddress">Address / City</label>
+                                <input type="text" id="address" class="live-input" placeholder="San Francisco, CA">
+                            </div>
+                            <div class="input-group conditional-group" id="group-dob">
+                                <label for="dob" data-i18n="lblDob">Date of Birth</label>
+                                <input type="text" id="dob" class="live-input" placeholder="01/01/1990">
+                            </div>
+                            <div class="input-group conditional-group" id="group-nationality">
+                                <label for="nationality" data-i18n="lblNationality">Nationality</label>
+                                <input type="text" id="nationality" class="live-input" placeholder="e.g. German">
+                            </div>
+                            <div class="input-group span-2 conditional-group" id="group-summary">
+                                <label for="summary" data-i18n="lblSummary">Professional Summary</label>
+                                <textarea id="summary" class="live-input" rows="4" placeholder="Briefly describe your career goals and largest accomplishments..."></textarea>
+                            </div>
+                            <div class="input-group span-2 conditional-group" id="group-photo">
+                                <label for="photo" data-i18n="lblPhoto">Professional Photo</label>
+                                <input type="file" id="photo" accept="image/*" class="form-control file-input pl-0">
+                                <small class="text-muted" data-i18n="lblPhotoHelper">A headshot is standard/optional for your region.</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: Experience -->
+                    <div class="wizard-step" data-step="2">
+                        <h2 data-i18n="h2Experience">Work Experience</h2>
+                        <div id="experience-list" class="dynamic-list"></div>
+                        <button type="button" class="btn btn-outline btn-sm add-btn btn-block" data-list="experience"><i class="fa-solid fa-plus"></i> <span data-i18n="btnAddPosition">Add Position</span></button>
+                        
+                        <h2 data-i18n="h2Projects" style="margin-top:2rem;">Projects / Achievements</h2>
+                        <div id="project-list" class="dynamic-list"></div>
+                        <button type="button" class="btn btn-outline btn-sm add-btn btn-block" data-list="project"><i class="fa-solid fa-plus"></i> <span data-i18n="btnAddProject">Add Project</span></button>
+                    </div>
+
+                    <!-- Step 3: Education -->
+                    <div class="wizard-step" data-step="3">
+                        <h2 data-i18n="h2Education">Education</h2>
+                        <div id="education-list" class="dynamic-list"></div>
+                        <button type="button" class="btn btn-outline btn-sm add-btn btn-block" data-list="education"><i class="fa-solid fa-plus"></i> <span data-i18n="btnAddDegree">Add Degree</span></button>
+                    </div>
+
+                    <!-- Step 4: Skills -->
+                    <div class="wizard-step" data-step="4">
+                        <h2 data-i18n="h2Skills">Skills</h2>
+                        <div class="input-group">
+                            <label for="skills" data-i18n="lblSkills">Skills (Comma-separated)</label>
+                            <input type="text" id="skills" class="live-input" placeholder="JavaScript, Docker, Agile">
+                        </div>
+                        
+                        <h2 data-i18n="h2ComputerSkills" style="margin-top:2rem;">Computer Skills</h2>
+                        <div class="input-group">
+                            <label for="computerSkills" data-i18n="lblComputerSkills">Software / Tools (Comma-separated)</label>
+                            <input type="text" id="computerSkills" class="live-input" placeholder="MS Office, AutoCAD, Photoshop">
+                        </div>
+
+                        <h2 data-i18n="h2Languages" style="margin-top:2rem;">Language Skills</h2>
+                        <div id="language-list" class="dynamic-list"></div>
+                        <button type="button" class="btn btn-outline btn-sm add-btn btn-block" data-list="language"><i class="fa-solid fa-plus"></i> <span data-i18n="btnAddLanguage">Add Language</span></button>
+                    </div>
+
+                    <!-- Step 5: Finalize -->
+                    <div class="wizard-step" data-step="5">
+                        <h2 data-i18n="h2Download">Ready to download!</h2>
+                        <p data-i18n="pDownload">Your CV is visually stunning and firmly respects regional HR standards.</p>
+                        <div class="text-center" style="margin-top: 2rem;">
+                            <i class="fa-solid fa-file-pdf" style="font-size: 4rem; color: #ef4444; margin-bottom: 1.5rem;"></i>
+                            <button type="button" class="btn btn-primary btn-block" id="finalize-download-btn"><i class="fa-solid fa-download"></i> <span data-i18n="btnExportPdf">Export High Quality PDF</span></button>
+                        </div>
+                        <div id="recommended-jobs-section" style="margin-top: 3rem; border-top: 1px solid var(--border-color); padding-top: 2rem;">
+                            <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem;"><i class="fa-solid fa-briefcase"></i> <span data-i18n="h3RecommendedJobs">Job Seeker — AI Job Suggestions</span></h3>
+                            <p class="text-muted" style="margin-bottom: 1.5rem;" data-i18n="pRecommendedJobs">Job Seeker analyzes your CV details, target role, skills and country to suggest matching jobs and the best local job sites.</p>
+                            
+                            <div style="margin-bottom: 1.5rem; background: var(--surface-color); padding: 1rem; border-radius: 12px; border: 1px solid var(--border-color);">
+                                <div class="input-group">
+                                    <label style="font-size: 0.8rem; font-weight: 600;">Work Type Preference</label>
+                                    <select id="job-search-type" class="live-input">
+                                        <option value="any">Any</option>
+                                        <option value="remote">Remote</option>
+                                        <option value="onsite">On-site</option>
+                                        <option value="hybrid">Hybrid</option>
+                                        <option value="full-time">Full-time</option>
+                                        <option value="part-time">Part-time</option>
+                                        <option value="contract">Contract</option>
+                                        <option value="internship">Internship</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <button type="button" id="find-jobs-btn" class="btn btn-primary btn-block"><i class="fa-solid fa-magnifying-glass"></i> <span data-i18n="btnFindJobs">Find Matching Jobs</span></button>
+                            
+                            <div id="job-ai-suggestions" style="margin-top: 1.5rem; display: none;">
+                                <div style="background: rgba(0,113,227,0.05); border: 1px dashed var(--accent-color); padding: 1rem; border-radius: 12px;">
+                                    <h4 style="font-size: 0.9rem; color: var(--accent-color); margin-bottom: 0.5rem;"><i class="fa-solid fa-wand-magic-sparkles"></i> Discovery Tips</h4>
+                                    <div id="ai-suggestion-content" style="font-size: 0.85rem; line-height: 1.4; color: var(--text-color);"></div>
+                                </div>
+                            </div>
+
+                            <div id="jobs-container" style="margin-top: 1.5rem; display: flex; flex-direction: column; gap: 1rem;"></div>
+                        </div>
+                    </div>
+
+                </form>
+
+                <!-- Navigation Controls -->
+                <div class="form-nav">
+                    <button type="button" class="btn btn-secondary" id="wiz-prev" style="visibility: hidden;"><i class="fa-solid fa-arrow-left"></i> Back</button>
+                    <button type="button" class="btn btn-primary" id="wiz-next">Next <i class="fa-solid fa-arrow-right"></i></button>
+                </div>
+            </section>
+
+            <!-- Right Side: Live Preview -->
+            <section class="preview-section">
+                <div class="preview-actions">
+                    <div style="display:flex; gap:10px; align-items:center;">
+                        <span id="active-region-badge" class="badge bg-white"></span>
+                        <div class="lang-switcher">
+                            <button class="lang-btn active" data-lang="en">EN</button>
+                            <button class="lang-btn" data-lang="ru">RU</button>
+                            <button class="lang-btn" data-lang="de">DE</button>
+                            <button class="lang-btn" data-lang="az">AZ</button>
+                            <button class="lang-btn" data-lang="tr">TR</button>
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary btn-sm" id="overlay-download-btn" style="pointer-events: auto;"><i class="fa-solid fa-download"></i> <span data-i18n="btnDownloadTop">Download</span></button>
+                </div>
+                
+                <div class="preview-container-wrapper">
+                    <!-- CV injected here. Classes will be applied dynamically -->
+                    <div id="cv-preview" class="cv-document"></div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- UI Templates for JS -->
+    <template id="tpl-experience">
+        <div class="dynamic-item">
+            <div class="item-header">
+                <h4>Experience</h4>
+                <button type="button" class="btn-icon remove-btn"><i class="fa-solid fa-trash"></i></button>
+            </div>
+            <div class="grid-2">
+                <div class="input-group">
+                    <label data-i18n="lblJobTitle">Job Title</label>
+                    <input type="text" class="inp-title live-input" placeholder="Software Engineer">
+                </div>
+                <div class="input-group">
+                    <label data-i18n="lblCompany">Company</label>
+                    <input type="text" class="inp-company live-input" placeholder="Google">
+                </div>
+                <div class="input-group span-2">
+                    <label data-i18n="lblDescription">Description / Tasks</label>
+                    <textarea class="inp-desc live-input" rows="3"></textarea>
+                </div>
+                <div class="input-group">
+                    <label data-i18n="lblDates">Dates</label>
+                    <input type="text" class="inp-date live-input" placeholder="Jan 2019 - Present">
+                </div>
+                <div class="input-group">
+                    <label data-i18n="lblLocation">Location</label>
+                    <input type="text" class="inp-loc live-input" placeholder="Berlin">
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="tpl-education">
+        <div class="dynamic-item">
+            <div class="item-header">
+                <h4>Education</h4>
+                <button type="button" class="btn-icon remove-btn"><i class="fa-solid fa-trash"></i></button>
+            </div>
+            <div class="grid-2">
+                <div class="input-group">
+                    <label data-i18n="lblDegree">Degree</label>
+                    <input type="text" class="inp-title live-input" placeholder="M.Sc. Computer Science">
+                </div>
+                <div class="input-group">
+                    <label data-i18n="lblInstitution">Institution</label>
+                    <input type="text" class="inp-company live-input" placeholder="MIT">
+                </div>
+                <div class="input-group span-2">
+                    <label data-i18n="lblDates">Dates</label>
+                    <input type="text" class="inp-date live-input" placeholder="2015 - 2019">
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="tpl-project">
+        <div class="dynamic-item">
+            <div class="item-header">
+                <h4>Project</h4>
+                <button type="button" class="btn-icon remove-btn"><i class="fa-solid fa-trash"></i></button>
+            </div>
+            <div class="grid-2">
+                <div class="input-group span-2">
+                    <label data-i18n="lblProjectName">Project Name / Focus</label>
+                    <input type="text" class="inp-title live-input" placeholder="E-commerce Redesign">
+                </div>
+                <div class="input-group span-2">
+                    <label data-i18n="lblDescription">Description</label>
+                    <textarea class="inp-desc live-input" rows="3" placeholder="Led the migration to microservices, reducing load time by 40%..."></textarea>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <template id="tpl-language">
+        <div class="dynamic-item" style="padding: 10px; border-left: 2px solid var(--accent-color);">
+            <div class="item-header" style="margin-bottom: 5px;">
+                <h4 style="font-size: 0.9rem;">Language</h4>
+                <button type="button" class="btn-icon remove-btn"><i class="fa-solid fa-trash"></i></button>
+            </div>
+            <div class="grid-2">
+                <div class="input-group">
+                    <label data-i18n="lblLangName">Language Name</label>
+                    <input type="text" class="inp-lang live-input" placeholder="English">
+                </div>
+                <div class="input-group">
+                    <label data-i18n="lblProficiency">Proficiency (0-100)</label>
+                    <input type="number" class="inp-prof live-input" placeholder="85" min="0" max="100">
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- AI Assistant UI -->
+    <button id="ai-assistant-toggle" class="ai-fab-btn">
+        <i class="fa-solid fa-robot"></i> AI
+    </button>
+
+    <div id="ai-assistant-panel" class="ai-panel">
+        <div class="ai-header">
+            <h3><i class="fa-solid fa-wand-magic-sparkles"></i> AI CV Assistant</h3>
+            <button id="ai-close-btn" class="btn-icon"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="ai-body">
+            <div id="ai-response-box" class="ai-response-box">
+                <p class="text-muted" style="margin:0; font-size: 0.9rem;">Hi! I'm your AI CV Coach. How can I help you improve your CV today?</p>
+            </div>
+            <p class="text-muted" style="margin:0.75rem 1.25rem; font-size: 0.85rem; border-bottom: 1px dashed var(--border-color); padding-bottom: 0.5rem;">
+                <i class="fa-solid fa-lightbulb"></i> Tip: Upload an old CV to autofill your profile instantly.
+            </p>
+            <div class="ai-quick-actions">
+                <button class="ai-quick-btn" data-action="Improve Summary">Improve Summary</button>
+                <button class="ai-quick-btn" data-action="Rewrite Experience">Rewrite Experience</button>
+                <button class="ai-quick-btn" data-action="Suggest Skills">Suggest Skills</button>
+                <button class="ai-quick-btn" data-action="Make ATS Friendly">Make ATS Friendly</button>
+                <button class="ai-quick-btn" data-action="Fix Grammar">Fix Grammar</button>
+                <button class="ai-quick-btn" data-action="Best CV Advice">Best CV Advice</button>
+            </div>
+            <div class="ai-input-area">
+                <input type="file" id="ai-upload-cv-input" accept=".pdf,.docx,.txt,.png,.jpg,.jpeg,.webp" style="display: none;">
+                <button type="button" id="ai-upload-plus-btn" class="btn btn-outline btn-sm" style="padding: 0 10px; height: 38px; border-radius: 8px; min-width: 38px;" title="Upload Old CV">
+                    <i class="fa-solid fa-plus"></i>
+                </button>
+                <textarea id="ai-user-input" rows="2" placeholder="Ask AI or upload old CV..." style="flex: 1;"></textarea>
+                <button id="ai-send-btn" class="btn btn-primary btn-sm" style="height: 38px;"><i class="fa-solid fa-paper-plane"></i></button>
+            </div>
+        </div>
+    </div>
+
+    </div> <!-- End main-app wrapper -->
+
+    <!-- Profile Panel Modal -->
+    <div id="profile-modal" class="modal" style="display: none;">
+        <div class="modal-content onboard-card">
+            <span class="close-modal" id="close-profile">&times;</span>
+            <h2>My Profile</h2>
+            <div class="input-group text-left mt-3">
+                <label>Name</label>
+                <input type="text" id="profile-name">
+            </div>
+            <div class="input-group text-left mt-2">
+                <label>Email</label>
+                <input type="email" id="profile-email" disabled style="background: var(--bg-color); cursor: not-allowed;">
+            </div>
+            <button id="save-profile-btn" class="btn btn-primary btn-block mt-3">Save Changes</button>
+        </div>
+    </div>
+
+    <script src="global-menu.js"></script>
+    <script src="script.js"></script>
+    <script src="template-visible-final-fix.js"></script>
+    <script src="ai-fix.js"></script>
+    <script src="ai-final-click-fix.js"></script>
+    <script src="cv-language-import-final.js"></script>
+    <script src="auto-apply-direct-fix.js"></script>
+    <script src="cv-save-upload-fix.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
